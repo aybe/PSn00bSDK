@@ -73,7 +73,7 @@ const DECDCTTAB *_vlc_huffman_table2 = 0;
 	window    <<= (num); \
 	bit_offset -= (num);
 
-int __attribute__((optimize(3))) DecDCTvlcContinue2(
+int /*__attribute__((optimize(3)))*/ DecDCTvlcContinue2(
 	VLC_Context *ctx, uint32_t *buf, size_t max_size
 ) {
 	const uint32_t	*input		= ctx->input;

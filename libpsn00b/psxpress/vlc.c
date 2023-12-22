@@ -137,12 +137,16 @@ const VLC_TableV3 *_vlc_huffman_table = &_default_huffman_table;
 
 /* Stateful VLC decoder API (for Sony SDK compatibility) */
 
+#if PSX_USE_NEW_DEC_DCT_VLC
+
 int DecDCTvlc(const uint32_t *bs, uint32_t *buf) {
 	if (bs)
 		return DecDCTvlcStart(&_default_context, buf, _max_buffer_size, bs);
 	else
 		return DecDCTvlcContinue(&_default_context, buf, _max_buffer_size);
 }
+
+#endif
 
 size_t DecDCTvlcSize(size_t size) {
 	size_t old_size  = _max_buffer_size;

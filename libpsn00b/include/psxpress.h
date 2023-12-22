@@ -27,6 +27,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define PSX_API __declspec(dllexport)
+
+#define PSX_USE_NEW_DEC_DCT_VLC 0 // this is written in MIPS assembly
+
 /* Structure definitions */
 
 typedef struct _DECDCTENV {
@@ -100,7 +104,7 @@ extern "C" {
  *
  * @see DecDCTPutEnv()
  */
-void DecDCTReset(int mode);
+PSX_API void DecDCTReset(int mode);
 
 /**
  * @brief Loads default or custom quantization and IDCT tables into the MDEC.
@@ -123,7 +127,7 @@ void DecDCTReset(int mode);
  * @param env Pointer to DECDCTENV or 0 for default tables
  * @param mono 0 for color (normal), 1 for monochrome
  */
-void DecDCTPutEnv(const DECDCTENV *env, int mono);
+PSX_API void DecDCTPutEnv(const DECDCTENV *env, int mono);
 
 /**
  * @brief Feeds the MDEC with a run-length code buffer from the specified
@@ -147,7 +151,7 @@ void DecDCTPutEnv(const DECDCTENV *env, int mono);
  *
  * @see DecDCTinRaw(), DecDCTinSync()
  */
-void DecDCTin(const uint32_t *data, int mode);
+PSX_API void DecDCTin(const uint32_t *data, int mode);
 
 /**
  * @brief Feeds the MDEC with raw data from the specified location.
@@ -169,7 +173,7 @@ void DecDCTin(const uint32_t *data, int mode);
  *
  * @see DecDCTin(), DecDCTinSync()
  */
-void DecDCTinRaw(const uint32_t *data, size_t length);
+PSX_API void DecDCTinRaw(const uint32_t *data, size_t length);
 
 /**
  * @brief Waits for an MDEC input transfer to finish or returns its status.
@@ -187,7 +191,7 @@ void DecDCTinRaw(const uint32_t *data, size_t length);
  * @param mode
  * @return 0 or -1 in case of a timeout (mode = 0), MDEC busy flag (mode = 1)
  */
-int DecDCTinSync(int mode);
+PSX_API int DecDCTinSync(int mode);
 
 /**
  * @brief Writes image data decoded by the MDEC to the specified location.
@@ -208,7 +212,7 @@ int DecDCTinSync(int mode);
  *
  * @see DecDCToutSync()
  */
-void DecDCTout(uint32_t *data, size_t length);
+PSX_API void DecDCTout(uint32_t *data, size_t length);
 
 /**
  * @brief Waits for an MDEC output transfer to finish or returns its status.
@@ -224,7 +228,7 @@ void DecDCTout(uint32_t *data, size_t length);
  * @param mode
  * @return 0 or -1 in case of a timeout (mode = 0), DMA busy flag (mode = 1)
  */
-int DecDCToutSync(int mode);
+PSX_API int DecDCToutSync(int mode);
 
 /**
  * @brief Decompresses or begins decompressing a .BS file into MDEC codes.
@@ -257,7 +261,7 @@ int DecDCToutSync(int mode);
  *
  * @see DecDCTvlcContinue(), DecDCTvlcCopyTableV2(), DecDCTvlcCopyTableV3()
  */
-int DecDCTvlcStart(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint32_t *bs);
+PSX_API int DecDCTvlcStart(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint32_t *bs);
 
 /**
  * @brief Resumes or finishes decompressing a .BS file into MDEC codes.
@@ -286,7 +290,9 @@ int DecDCTvlcStart(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint3
  *
  * @see DecDCTvlcStart()
  */
-int DecDCTvlcContinue(VLC_Context *ctx, uint32_t *buf, size_t max_size);
+PSX_API int DecDCTvlcContinue(VLC_Context *ctx, uint32_t *buf, size_t max_size);
+
+#if PSX_USE_NEW_DEC_DCT_VLC
 
 /**
  * @brief Decompresses a .BS file into MDEC codes.
@@ -311,7 +317,9 @@ int DecDCTvlcContinue(VLC_Context *ctx, uint32_t *buf, size_t max_size);
  *
  * @see DecDCTvlcSize(), DecDCTvlcCopyTableV2(), DecDCTvlcCopyTableV3()
  */
-int DecDCTvlc(const uint32_t *bs, uint32_t *buf);
+PSX_API int DecDCTvlc(const uint32_t *bs, uint32_t *buf);
+
+#endif
 
 /**
  * @brief Sets the maximum amount of data to be decompressed.
@@ -329,7 +337,7 @@ int DecDCTvlc(const uint32_t *bs, uint32_t *buf);
  *
  * @see DecDCTvlc()
  */
-size_t DecDCTvlcSize(size_t size);
+PSX_API size_t DecDCTvlcSize(size_t size);
 
 /**
  * @brief Copies the lookup tables used by the .BS decompressor (v1/v2) to the
@@ -360,7 +368,7 @@ size_t DecDCTvlcSize(size_t size);
  *
  * @see DecDCTvlcCopyTableV3()
  */
-void DecDCTvlcCopyTableV2(VLC_TableV2 *addr);
+PSX_API void DecDCTvlcCopyTableV2(VLC_TableV2 *addr);
 
 /**
  * @brief Copies the lookup tables used by the .BS decompressor (v1/v2/v3) to
@@ -385,7 +393,7 @@ void DecDCTvlcCopyTableV2(VLC_TableV2 *addr);
  *
  * @see DecDCTvlcCopyTableV2()
  */
-void DecDCTvlcCopyTableV3(VLC_TableV3 *addr);
+PSX_API void DecDCTvlcCopyTableV3(VLC_TableV3 *addr);
 
 /**
  * @brief Decompresses or begins decompressing a .BS file into MDEC codes
@@ -419,7 +427,7 @@ void DecDCTvlcCopyTableV3(VLC_TableV3 *addr);
  *
  * @see DecDCTvlcContinue2(), DecDCTvlcBuild()
  */
-int DecDCTvlcStart2(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint32_t *bs);
+PSX_API int DecDCTvlcStart2(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint32_t *bs);
 
 /**
  * @brief Resumes or finishes decompressing a .BS file into MDEC codes
@@ -446,7 +454,7 @@ int DecDCTvlcStart2(VLC_Context *ctx, uint32_t *buf, size_t max_size, const uint
  *
  * @see DecDCTvlcStart2()
  */
-int DecDCTvlcContinue2(VLC_Context *ctx, uint32_t *buf, size_t max_size);
+PSX_API int DecDCTvlcContinue2(VLC_Context *ctx, uint32_t *buf, size_t max_size);
 
 /**
  * @brief Decompresses a .BS file into MDEC codes (alternate implementation).
@@ -470,7 +478,7 @@ int DecDCTvlcContinue2(VLC_Context *ctx, uint32_t *buf, size_t max_size);
  *
  * @see DecDCTvlcSize2(), DecDCTvlcBuild()
  */
-int DecDCTvlc2(const uint32_t *bs, uint32_t *buf, DECDCTTAB *table);
+PSX_API int DecDCTvlc2(const uint32_t *bs, uint32_t *buf, DECDCTTAB *table);
 
 /**
  * @brief Sets the maximum amount of data to be decompressed (alternate
@@ -489,7 +497,7 @@ int DecDCTvlc2(const uint32_t *bs, uint32_t *buf, DECDCTTAB *table);
  *
  * @see DecDCTvlc2()
  */
-size_t DecDCTvlcSize2(size_t size);
+PSX_API size_t DecDCTvlcSize2(size_t size);
 
 /**
  * @brief Generates the lookup table used by the alternate implementation of
@@ -506,7 +514,7 @@ size_t DecDCTvlcSize2(size_t size);
  *
  * @param table
  */
-void DecDCTvlcBuild(DECDCTTAB *table);
+PSX_API void DecDCTvlcBuild(DECDCTTAB *table);
 
 #ifdef __cplusplus
 }

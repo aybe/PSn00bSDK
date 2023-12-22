@@ -38,7 +38,7 @@ void _assert_abort(const char *file, int line, const char *expr);
 	printf(SDK_LIBRARY_NAME ": " fmt __VA_OPT__(,) __VA_ARGS__)
 #else
 #define _sdk_log(fmt, ...) \
-	printf(fmt __VA_OPT__(,) __VA_ARGS__)
+	//printf(fmt, /*__VA_OPT__(,)*/ __VA_ARGS__) // TODO
 #endif
 
 #define _sdk_assert(expr, ret, fmt, ...) \

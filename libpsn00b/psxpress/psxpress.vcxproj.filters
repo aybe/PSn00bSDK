@@ -18,6 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mdec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vlc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vlc2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
