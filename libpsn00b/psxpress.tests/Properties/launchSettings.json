@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "psxpress.tests": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

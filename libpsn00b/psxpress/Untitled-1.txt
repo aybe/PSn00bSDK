@@ -1,0 +1,5 @@
+Faulty functions lacking PSX memory:
+DecDCTReset
+DecDCTPutEnv
+DecDCTinSync
+DecDCTinRaw

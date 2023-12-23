@@ -7,6 +7,53 @@
 
 #include <stdint.h>
 
+#define PSX_RAM_MIN 0x00000000
+#define PSX_RAM_MAX 0xBFC7FFFF
+
+struct psx_ram
+{
+	uint8_t* data;
+	uint32_t omin;
+	uint32_t omax;
+	uint32_t size;
+};
+
+struct psx_ram* InitRam(uint32_t omin, uint32_t omax)
+{
+	struct psx_ram *ram = malloc(sizeof(struct psx_ram));
+
+	uint32_t size = omax - omin + 1;
+
+	ram->data = calloc(size);
+	ram->omin = omin;
+	ram->omax = omax;
+	ram->size = size;
+
+	return ram;
+}
+
+struct psx_ram* Kernel;
+struct psx_ram* User;
+
+struct psx_ram** Arrays[] = { &Kernel, &User, NULL };
+
+void Init()
+{
+	Kernel = InitRam(0x00000000, 0x001FFFFF);
+}
+
+void FreeRam(struct psx_ram* ram)
+{
+	free(ram->data);
+	free(ram);
+	ram = NULL;
+}
+
+void Free()
+{
+	FreeRam(Kernel);
+}	
+
 #define _ADDR8(addr)		((volatile uint8_t *) (addr))
 #define _ADDR16(addr)		((volatile uint16_t *) (addr))
 #define _ADDR32(addr)		((volatile uint32_t *) (addr))
