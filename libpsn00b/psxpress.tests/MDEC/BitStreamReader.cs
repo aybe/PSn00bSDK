@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace psxpress.tests;
+namespace psxpress.tests.MDEC;
 
 public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool leaveOpen = false) : IDisposable
 {

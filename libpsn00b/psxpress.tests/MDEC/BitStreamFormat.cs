@@ -1,4 +1,4 @@
-namespace psxpress.tests;
+namespace psxpress.tests.MDEC;
 
 public readonly struct BitStreamFormat
 {

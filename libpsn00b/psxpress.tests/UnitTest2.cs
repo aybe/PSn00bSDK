@@ -1,3 +1,5 @@
+using psxpress.tests.MDEC;
+
 namespace psxpress.tests;
 
 [TestClass]
