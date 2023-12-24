@@ -17,16 +17,16 @@ public readonly struct BitStreamFormat
 		new(1, false, true);
 
 	public static BitStreamFormat ShortBigEndianLeastSignificant { get; } =
-		new(2, BitConverter.IsLittleEndian is false, false);
-
-	public static BitStreamFormat ShortBigEndianMostSignificant { get; } =
-		new(2, BitConverter.IsLittleEndian is false, true);
-
-	public static BitStreamFormat ShortLittleEndianLeastSignificant { get; } =
 		new(2, BitConverter.IsLittleEndian, false);
 
-	public static BitStreamFormat ShortLittleEndianMostSignificant { get; } =
+	public static BitStreamFormat ShortBigEndianMostSignificant { get; } =
 		new(2, BitConverter.IsLittleEndian, true);
+
+	public static BitStreamFormat ShortLittleEndianLeastSignificant { get; } =
+		new(2, BitConverter.IsLittleEndian is false, false);
+
+	public static BitStreamFormat ShortLittleEndianMostSignificant { get; } =
+		new(2, BitConverter.IsLittleEndian is false, true);
 
 	public int ByteSize { get; }
 
