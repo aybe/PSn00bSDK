@@ -133,7 +133,7 @@ public sealed class UnitTest4 : UnitTestBase
 		Assert.AreEqual(0x3800, mdecFileId);
 		Assert.AreEqual(0x0001, quantStep);
 		Assert.AreEqual(0x0001, version);
-		
+
 		WriteLine();
 
 		WriteLine($"0x{(ushort)0x20FE:X4} = {ToBinaryString((ushort)0x20FE)}");
@@ -142,7 +142,9 @@ public sealed class UnitTest4 : UnitTestBase
 		while (stream.Position < stream.Length)
 		{
 			var dc = reader.Read<short>(10);
-			WriteLine($"{nameof(dc)}:      {ToBinaryString(dc)} {dc}");
+			var eb = reader.Read<ushort>(2);
+			Assert.AreEqual(2, eb);
+
 			break;
 		}
 	}

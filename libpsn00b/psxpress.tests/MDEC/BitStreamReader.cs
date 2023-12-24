@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -94,6 +95,7 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 		for (var i = 0; i < bits; i++)
 		{
 			var read = Read();
+
 			if (DebugQueue)
 			{
 				Console.WriteLine(read ? 1 : 0);
@@ -113,5 +115,29 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 		}
 
 		return data;
+	}
+
+	public T Peek<T>(int bits) where T : IBinaryInteger<T>, IMinMaxValue<T>
+	{
+		var pool = ArrayPool<bool>.Shared;
+		var size = Queue.Count;
+		var rent = pool.Rent(size);
+
+		Queue.CopyTo(rent, 0);
+
+		using var scope = new StreamPositionScope(stream);
+
+		var peek = Read<T>(bits);
+
+		Queue.Clear();
+
+		for (var i = 0; i < size; i++)
+		{
+			Queue.Enqueue(rent[i]);
+		}
+
+		pool.Return(rent);
+
+		return peek;
 	}
 }
