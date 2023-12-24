@@ -21,10 +21,10 @@ public sealed class UnitTest4 : UnitTestBase
 
 		var sectorCount = stream.Length / sectorLength;
 
-		var printSectorHeader = true;
-		var printSectorSubHeader = true;
-		var printSectorMdecHeader = true;
-		var printSectorMdecSubHeader = true;
+		var printSectorHeader = false;
+		var printSectorSubHeader = false;
+		var printSectorMdecHeader = false;
+		var printSectorMdecSubHeader = false;
 
 		var frames = new Dictionary<uint, FrameData>();
 
@@ -85,22 +85,35 @@ public sealed class UnitTest4 : UnitTestBase
 
 			var pos = Math.Min(mdecHeader.FrameSize, mdecHeader.SectorOffset * 2016);
 			var len = Math.Min(2016, mdecHeader.FrameSize - pos);
+
 			if (len > 0)
 			{
-				WriteLine($"{pos}, {len}");
 				stream.ReadExactly(data.Data, (int)pos, (int)len);
 			}
 			else
 			{
 				Assert.AreEqual((int)mdecHeader.FrameSize, data.Data.Length);
 			}
-
-			WriteLine();
 		}
+
+		Decode(frames);
+	}
+
+	private void Decode(Dictionary<uint, FrameData> frames)
+	{
+		foreach (var frameData in frames)
+		{
+			Decode(frameData);
+		}
+	}
+
+	private void Decode(KeyValuePair<uint, FrameData> frameData)
+	{
+		
 	}
 }
 
-internal class FrameData
+public class FrameData
 {
 	public byte[] Data;
 	public MdecHeader MdecHeader;
