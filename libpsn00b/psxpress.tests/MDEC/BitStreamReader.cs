@@ -7,6 +7,12 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 {
 	private readonly Queue<bool> Queue = new();
 
+	private bool DebugQueue { get; } = false;
+
+	private bool DebugRead { get; } = false;
+
+	private bool FixCrap { get; } = true;
+
 	public void Dispose()
 	{
 		if (leaveOpen)
@@ -38,13 +44,33 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 			buffer.Reverse();
 		}
 
+		var reversed = format.Reversed;
+
+		if (FixCrap)
+		{
+			reversed = true; // BUG we shouldn't need this?
+			buffer.Reverse(); // BUG we shouldn't need this? 
+		}
+
 		foreach (var b in buffer)
 		{
 			for (var i = 0; i < 8; i++)
 			{
-				Queue.Enqueue((b & (1 << (format.Reversed ? 7 - i : i))) != 0);
+				Queue.Enqueue((b & (1 << (reversed ? 7 - i : i))) != 0);
 			}
 		}
+
+		if (!DebugRead)
+		{
+			return;
+		}
+
+		foreach (var b in Queue)
+		{
+			Console.Write(Convert.ToInt16(b));
+		}
+
+		Console.WriteLine();
 	}
 
 	public bool Read()
@@ -67,7 +93,13 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 
 		for (var i = 0; i < bits; i++)
 		{
-			data |= (Read() ? T.One : T.Zero) << i;
+			var read = Read();
+			if (DebugQueue)
+			{
+				Console.WriteLine(read ? 1 : 0);
+			}
+
+			data |= (read ? T.One : T.Zero) << (format.Reversed ? bits - i - 1 : i);
 		}
 
 		if (T.MinValue >= T.Zero)
