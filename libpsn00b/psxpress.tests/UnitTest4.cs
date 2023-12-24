@@ -28,6 +28,8 @@ public sealed class UnitTest4 : UnitTestBase
 
 		var frames = new Dictionary<uint, FrameData>();
 
+		var decodeFirstFrameOnly = true;
+
 		for (var i = 0; i < sectorCount; i++)
 		{
 			stream.Position = i * sectorLength;
@@ -72,6 +74,11 @@ public sealed class UnitTest4 : UnitTestBase
 				WriteLine(mdecSubHeader);
 			}
 
+			if (decodeFirstFrameOnly && mdecHeader.FrameNumber > 1)
+			{
+				break;
+			}
+
 			if (!frames.TryGetValue(mdecHeader.FrameNumber, out var data))
 			{
 				var frameData = new FrameData();
@@ -109,7 +116,7 @@ public sealed class UnitTest4 : UnitTestBase
 
 	private void Decode(KeyValuePair<uint, FrameData> frameData)
 	{
-		
+		using var stream = new MemoryStream(frameData.Value.Data);
 	}
 }
 
