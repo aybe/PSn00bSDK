@@ -87,7 +87,7 @@ public sealed class BitStreamReader(Stream stream, BitStreamFormat format, bool 
 	{
 		var size = Unsafe.SizeOf<T>() * 8;
 
-		ArgumentOutOfRangeException.ThrowIfLessThan(bits, 1);
+		ArgumentOutOfRangeException.ThrowIfNegative(bits);
 		ArgumentOutOfRangeException.ThrowIfGreaterThan(bits, size);
 
 		var data = T.Zero;

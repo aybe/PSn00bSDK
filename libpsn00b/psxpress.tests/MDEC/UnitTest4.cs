@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace psxpress.tests.MDEC;
 
@@ -114,8 +115,86 @@ public sealed class UnitTest4 : UnitTestBase
 		}
 	}
 
+	private void Test(byte[] data)
+	{
+		using var stream = new MemoryStream(data);
+		using var reader = new BitStreamReader(stream, BitStreamFormat.ShortLittleEndianMostSignificant);
+
+		var dc = reader.Read<short>(10);
+
+		WriteLine($"{nameof(dc)}: {dc}");
+
+		var codes = new[]
+		{
+			new Code(02, 0b0000000000_10, 00, 0, 0, 1),
+			new Code(02, 0b0000000000_11, 00, 1, 0, 0),
+			new Code(03, 0b000000000_011, 00, 1, 0, 0),
+			new Code(03, 0b000000000_010, 01, 1, 0, 0),
+			new Code(04, 0b00000000_0011, 01, 1, 0, 0),
+			new Code(05, 0b0000000_00101, 00, 1, 0, 0),
+			new Code(05, 0b0000000_00100, 03, 1, 0, 0),
+			new Code(04, 0b00000000_0001, 02, 1, 0, 0),
+			new Code(05, 0b0000000_00001, 02, 1, 0, 0),
+			new Code(06, 0b000000_000001, 16, 0, 1, 0),
+			new Code(07, 0b00000_0000001, 03, 1, 0, 0),
+			new Code(08, 0b0000_00000001, 04, 1, 0, 0),
+			new Code(09, 0b000_000000001, 04, 1, 0, 0),
+			new Code(10, 0b00_0000000001, 04, 1, 0, 0),
+			new Code(11, 0b0_00000000001, 04, 1, 0, 0),
+			new Code(12, 0b_000000000001, 04, 1, 0, 0)
+		};
+
+		var i = 0;
+
+		var n = 0;
+
+		while (stream.Position < stream.Length)
+		{
+			foreach (var code in codes)
+			{
+				if (reader.Peek<ushort>(code.Len) != code.Sig)
+				{
+					continue;
+				}
+
+				reader.Read<ushort>(code.Len);
+
+				WriteLine($"{i:D6} | {code}");
+
+				i++;
+
+				//WriteLine($"end {code.End}, esc {code.Esc}, sig {code.Sig.ToString($"B{code.Len}")} ");
+
+				if (code.End != 0)
+				{
+					break;
+				}
+
+				if (code.Esc != 0)
+				{
+					break;
+				}
+
+				var val = reader.Read<ushort>(code.Val);
+				var sgn = reader.Read<ushort>(code.Sgn);
+				//WriteLine($"\t{val}, {sgn}");
+				break;
+			}
+
+			n++;
+
+			if (n != i)
+			{
+				break;
+			}
+		}
+	}
+
+
 	private void Decode(KeyValuePair<uint, FrameData> frameData)
 	{
+		Test(frameData.Value.Data.AsSpan(8).ToArray());
+		return;
 
 		WriteLine($"0x{0xFE20:X4}, {ToBinaryString((ushort)0xFE20)}");
 		WriteLine($"0x{0x2291:X4}, {ToBinaryString((ushort)0x2291)}");
@@ -129,6 +208,7 @@ public sealed class UnitTest4 : UnitTestBase
 		{
 			WriteLine($"0x{b:X2} {ToBinaryString(b)}");
 		}
+
 		using var stream = new MemoryStream(frameData.Value.Data);
 		using var reader = new BitStreamReader(stream, BitStreamFormat.ShortLittleEndianMostSignificant);
 
@@ -293,5 +373,18 @@ public sealed class UnitTest4 : UnitTestBase
 		s = string.Join("_", chunk.Select(chars => new string(chars)));
 		return s;
 		return s;
+	}
+
+	private readonly record struct Code(int Len, int Sig, int Val, int Sgn, int Esc, int End)
+	{
+		public override string ToString()
+		{
+			return $"{nameof(Val)}: {Val}, " +
+			       $"{nameof(Sgn)}: {Sgn}, " +
+			       $"{nameof(Esc)}: {Esc}, " +
+			       $"{nameof(End)}: {End}, " +
+			       $"{nameof(Len)}: {Len}, " +
+			       $"{nameof(Sig)}: {Sig.ToString($"B{Len}")}";
+		}
 	}
 }
